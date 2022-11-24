@@ -1,0 +1,16 @@
+---
+version: '3.9'
+services:
+  memgraph-platform:
+    image: "memgraph/memgraph-platform:${MEMGRAPH_VERSION:-2.4.2}"
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/log/memgraph
+      - mg_etc:/etc/memgraph
+    environment:
+      - MEMGRAPH="--log-level=TRACE"
+    entrypoint: ["/usr/bin/supervisord"]
+volumes:
+  mg_lib:
+  mg_log:
+  mg_etc:

@@ -1,0 +1,17 @@
+---
+version: '3.9'
+services:
+  memgraph-platform:
+    labels:
+      - "traefik.docker.network=traefik_network"
+      - "traefik.enable=true"
+      - "traefik.http.services.memgraph${PREFIX}secure.loadbalancer.server.port=3000"
+      - "traefik.http.routers.memgraph${PREFIX}secure.service=memgraph${PREFIX}secure"
+      - "traefik.http.routers.memgraph${PREFIX}secure.entrypoints=https,https_priv"
+      - "traefik.http.routers.memgraph${PREFIX}secure.rule=Host(`${PREFIX}memgraph.${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.memgraph${PREFIX}secure.tls.certresolver=gandi-cr"
+      - "traefik.tcp.services.memgraph${PREFIX}bolt.loadbalancer.server.port=7687"
+      - "traefik.tcp.routers.memgraph${PREFIX}bolt.rule=HostSNI(`${PREFIX}memgraphbolt.${TRAEFIK_HOST}`)"
+      - "traefik.tcp.routers.memgraph${PREFIX}bolt.service=memgraph${PREFIX}bolt"
+      - "traefik.tcp.routers.memgraph${PREFIX}bolt.tls=true"
+      - "traefik.tcp.routers.memgraph${PREFIX}bolt.tls.certresolver=gandi-cr"
