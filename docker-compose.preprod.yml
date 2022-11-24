@@ -15,3 +15,8 @@ services:
       - "traefik.tcp.routers.memgraph${PREFIX}bolt.service=memgraph${PREFIX}bolt"
       - "traefik.tcp.routers.memgraph${PREFIX}bolt.tls=true"
       - "traefik.tcp.routers.memgraph${PREFIX}bolt.tls.certresolver=gandi-cr"
+    networks:
+      - traefik_network
+networks:
+  traefik_network:
+    external: true
