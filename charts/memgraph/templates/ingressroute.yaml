@@ -36,7 +36,7 @@ spec:
       services:
         - name: {{ $fullName }}
           port: {{ $svcPort }}
-            # middlewares:
-            #   - name: traefik-traefik-forward-auth@kubernetescrd
+      middlewares:
+        - name: traefik-traefik-forward-auth@kubernetescrd
     {{- end }}
 {{- end }}
