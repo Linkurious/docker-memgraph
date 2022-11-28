@@ -39,16 +39,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ $imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/usr/bin/supervisord"]
+          command: ["/usr/lib/memgraph/memgraph"]
           ports:
             - name: bolt
               containerPort: 7687
               protocol: TCP
-            {{- if .Values.platform.enabled }}
-            - name: platform
-              containerPort: 3000
-              protocol: TCP
-            {{- end }}
           # livenessProbe:
           #   httpGet:
           #     path: /
@@ -59,6 +54,29 @@ spec:
           #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.platform.enabled }}
+        - name: {{ .Chart.Name }}-platform
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ $imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["node", "/lab/dist-backend/server.js"]
+          workingDir: "/lab"
+          ports:
+            - name: platform
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: platform
+          readinessProbe:
+            httpGet:
+              path: /
+              port: platform
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
