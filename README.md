@@ -35,4 +35,3 @@ We provide a `Tiltfile`, for devlopping or testing the chart you can simply:
 ```bash
   tilt up
 ```
-
