@@ -40,6 +40,21 @@ spec:
           image: "{{ $imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/lib/memgraph/memgraph"]
+          {{- if or .Values.memgraph.env .Values.memgraph.password }}
+          env:
+          {{- if .Values.memgraph.password }}
+            - name: MEMGRAPH_USER
+              value: "memgraph"
+            - name: MEMGRAPH_PASSWORD
+              value: {{ .Values.memgraph.password | quote }}
+          {{- end }}
+          {{- with .Values.memgraph.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.memgraph.envFrom }}
+          envFrom: {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: bolt
               containerPort: 7687
