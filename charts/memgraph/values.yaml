@@ -98,6 +98,9 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+networkPolicies:
+  allowNamespaceIngress: true
+
 nodeSelector: {}
 
 tolerations: []
