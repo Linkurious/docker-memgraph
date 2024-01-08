@@ -60,18 +60,14 @@ spec:
               containerPort: 7687
               protocol: TCP
           readinessProbe:
-            exec:
-              command:
-                - mgconsole
-                - --version
+            tcpSocket:
+              port: 7687
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
           livenessProbe:
-            exec:
-              command:
-                - mgconsole
-                - --version
+            tcpSocket:
+              port: 7687
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
