@@ -40,6 +40,11 @@ spec:
           image: "{{ $imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/lib/memgraph/memgraph"]
+          args:
+          {{- range .Values.memgraphConfig }}
+          - {{ . | quote }}
+          {{- end }}
+
           {{- if or .Values.memgraph.env .Values.memgraph.password }}
           env:
           {{- if .Values.memgraph.password }}
