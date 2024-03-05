@@ -103,7 +103,7 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 networkPolicies:
-  allowNamespaceIngress: false
+  allowNamespaceIngress: true
 
 nodeSelector: {}
 
