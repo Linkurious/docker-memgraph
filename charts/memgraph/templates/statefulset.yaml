@@ -1,7 +1,3 @@
-{{- $imageName := $.Values.image.repository -}}
-{{- if $.Values.platform.enabled }}
-{{- $imageName = print $imageName "-platform" -}}
-{{- end}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -37,8 +33,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ $imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.memgraph.pullPolicy }}
           command: ["/usr/lib/memgraph/memgraph"]
           args:
           {{- range .Values.memgraphConfig }}
@@ -82,10 +78,8 @@ spec:
         - name: {{ .Chart.Name }}-platform
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ $imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["node", "/lab/dist-backend/server.js"]
-          workingDir: "/lab"
+          image: "{{ .Values.image.lab.repository }}:{{ .Values.image.lab.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.lab.pullPolicy }}
           ports:
             - name: platform
               containerPort: 3000
