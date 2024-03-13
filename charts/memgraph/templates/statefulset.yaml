@@ -78,10 +78,8 @@ spec:
         - name: {{ .Chart.Name }}-platform
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.lab.repository }}:{{ .Values.lab.memgraph.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["node", "/lab/dist-backend/server.js"]
-          workingDir: "/lab"
+          image: "{{ .Values.image.lab.repository }}:{{ .Values.image.lab.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.lab.pullPolicy }}
           ports:
             - name: platform
               containerPort: 3000
