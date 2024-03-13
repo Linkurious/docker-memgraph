@@ -5,10 +5,16 @@
 replicaCount: 1
 
 image:
-  repository: memgraph/memgraph
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  memgraph:
+    repository: memgraph/memgraph-mage
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "1.15-memgraph-2.15"
+  lab:
+    repository: memgraph/lab
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "2.12.2"
 
 imagePullSecrets: []
 nameOverride: ""
