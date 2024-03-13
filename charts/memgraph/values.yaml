@@ -87,7 +87,8 @@ ingressRoute:
 memgraphConfig:
   - "--also-log-to-stderr=true"
   - "--log-level=TRACE"
-  - "--storage-mode=ON_DISK_TRANSACTIONAL"
+    # - "--storage-mode=ON_DISK_TRANSACTIONAL"
+  - "--memory-limit=1536"
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -95,10 +96,10 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
   #   cpu: 100m
-    memory: 1024Mi
+    memory: 1794Mi
   requests:
     cpu: 100m
-    memory: 1024Mi
+    memory: 1794Mi
 
 autoscaling:
   enabled: false
