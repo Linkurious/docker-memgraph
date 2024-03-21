@@ -109,8 +109,12 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# Default network policy rules used by all components
 networkPolicies:
-  allowNamespaceIngress: true
+  # -- Create NetworkPolicy objects for all components
+  create: true
+  allowSameNamespaceIngress: true
+  allowAllNamespaceIngress: false
 
 nodeSelector: {}
 
