@@ -31,10 +31,12 @@ builder = "builder-" + k8s_namespace()
 #   # ]
 # )
 
+extra_values = ['--set=networkPolicies.allowAllNamespaceIngress=true']
 helm_resource(
   name=ctx.removesuffix('@k8s-dev') + '-tilt-memgraph',
   chart='charts/memgraph',
   deps=['charts/memgraph'],
+  flags=extra_values,
   #image_deps=['memgraph'],
   #image_keys=[('linkurious-enterprise.image.repository','linkurious-enterprise.image.tag')]
   )
