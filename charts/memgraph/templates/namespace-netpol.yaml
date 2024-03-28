@@ -20,5 +20,6 @@ spec:
       - namespaceSelector: {}
       {{- end }}
       ports:
+      - port: bolt
       - port: platform
 {{- end }}
