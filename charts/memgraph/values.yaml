@@ -36,6 +36,22 @@ memgraph:
     #     name: config-map-name
     # - secretRef:
     #     name: secret-name
+  dataset:
+    ## Enable the dataset
+    ##
+    enabled: false
+    ## The name of the dataset to use
+    ##
+    url: ""
+    ## The name of the secret containing login information for the dataset
+    ##
+    secretName: ""
+    ## The key in the secret containing the user to download the dataset
+    ##
+    usernameSecretKey: ""
+    ## The key in the secret containing the password to download the dataset
+    ##
+    passwordSecretKey: ""
 
 platform:
   enabled: true
