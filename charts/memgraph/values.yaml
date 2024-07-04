@@ -10,12 +10,12 @@ image:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     # See https://hub.docker.com/r/memgraph/memgraph-mage/tags
-    tag: "1.16-memgraph-2.16"
+    tag: "1.18-memgraph-2.18"
   lab:
     repository: memgraph/lab
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "2.13.0"
+    tag: "2.15.0"
 
 imagePullSecrets: []
 nameOverride: ""
