@@ -106,6 +106,10 @@ memgraphConfig:
   - "--log-level=TRACE"
     # - "--storage-mode=ON_DISK_TRANSACTIONAL"
   - "--memory-limit=1536"
+  # for efficient schema sampling
+  - "--storage-enable-schema-metadata=true"
+  - "--storage-automatic-label-index-creation-enabled=true"
+  - "--storage_automatic_edge_type_index_creation_enabled=true"
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

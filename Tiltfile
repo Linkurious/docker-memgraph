@@ -31,11 +31,18 @@ builder = "builder-" + k8s_namespace()
 #   # ]
 # )
 
+deps=['charts/memgraph']
 extra_values = ['--set=networkPolicies.allowAllNamespaceIngress=true']
+internal_values_filename = 'values.internal.yaml'
+
+if os.path.exists(internal_values_filename):
+  extra_values = ['--values='+internal_values_filename]
+  deps += [internal_values_filename]
+
 helm_resource(
   name=ctx.removesuffix('@k8s-dev') + '-tilt-memgraph',
   chart='charts/memgraph',
-  deps=['charts/memgraph'],
+  deps=deps,
   flags=extra_values,
   #image_deps=['memgraph'],
   #image_keys=[('linkurious-enterprise.image.repository','linkurious-enterprise.image.tag')]
