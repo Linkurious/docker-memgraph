@@ -33,9 +33,22 @@ spec:
        {{- if .Values.memgraph.dataset.enabled }}
         - name: curl
           image: curlimages/curl:8.7.1
+          env:
+            - name: DATASET_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.memgraph.dataset.secretName }} 
+                  key:  {{ .Values.memgraph.dataset.usernameSecretKey }}
+            - name: DATASET_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.memgraph.dataset.secretName }} 
+                  key:  {{ .Values.memgraph.dataset.passwordSecretKey}}
           args:
             - -vfL
             - {{ .Values.memgraph.dataset.url | quote }}
+            - -u
+            - "$(DATASET_USERNAME):$(DATASET_PASSWORD)"
             - -o 
             - /dataset/dataset.cypherl
           volumeMounts:
@@ -52,6 +65,9 @@ spec:
           args:
           {{- range .Values.memgraphConfig }}
           - {{ . | quote }}
+          {{- end }}
+          {{- if .Values.memgraph.dataset.enabled }}
+          - --init-data-file=/dataset/dataset.cypherl
           {{- end }}
 
           {{- if or .Values.memgraph.env .Values.memgraph.password }}

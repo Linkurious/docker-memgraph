@@ -39,16 +39,19 @@ memgraph:
   dataset:
     ## Enable the dataset
     ##
-    enabled: enabled
+    enabled: false
     ## The name of the dataset to use
     ##
-    url: "https://nexus3.linkurious.net/repository/datasets/com/linkurious/memgraph/2.15.1/fincrime-sales/fincrime-sales-2.0.3.cypherl"
+    url: ""
     ## The name of the secret containing login information for the dataset
     ##
     secretName: ""
-    ## The key in the secret containing the dataset
+    ## The key in the secret containing the user to download the dataset
     ##
-    secretKey: ""
+    usernameSecretKey: ""
+    ## The key in the secret containing the password to download the dataset
+    ##
+    passwordSecretKey: ""
 
 platform:
   enabled: true
