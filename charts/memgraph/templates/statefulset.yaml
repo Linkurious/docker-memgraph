@@ -82,13 +82,13 @@ spec:
           {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-          {{- with .Values.memgraph.envFrom }}
           envFrom:
-           {{- toYaml . | nindent 12 }}
-            {{-if .Values.memgraph.existingLicenseSecret -}}
+          {{- with .Values.memgraph.envFrom }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.memgraph.existingLicenseSecret }}
               - secretRef:
                   name: {{ .Values.memgraph.existingLicenseSecret }}
-            {{- end }}
           {{- end }}
           volumeMounts:
             - name: dataset
