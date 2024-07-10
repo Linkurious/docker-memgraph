@@ -36,6 +36,10 @@ memgraph:
     #     name: config-map-name
     # - secretRef:
     #     name: secret-name
+  ## Provide an existing secret containing the license key, it must contain a key named "MEMGRAPH_ENTERPRISE_LICENSE"
+  ## and "MEMGRAPH_ORGANIZATION_NAME"
+  existingLicenseSecret: ""
+
   dataset:
     ## Enable the dataset
     ##
