@@ -2,7 +2,7 @@
 
 lkeSubReleaseJob {
   // General
-  projectName = "linkurious/docker-lke"
+  projectName = "linkurious/docker-memgraph"
 
   releaseType = 'docker'
   reviewers = "Linkurious/devops"
