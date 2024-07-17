@@ -1,0 +1,12 @@
+@Library('linkurious-shared')_
+
+lkeSubReleaseJob {
+  // General
+  projectName = "linkurious/docker-memgraph"
+
+  releaseType = 'docker'
+  reviewers = "Linkurious/devops"
+
+  runAssetWaiter = true
+
+}
