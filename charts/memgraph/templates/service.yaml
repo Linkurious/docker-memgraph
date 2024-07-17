@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "memgraph.fullname" . }}
+  labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 7687
+      targetPort: bolt
+      protocol: TCP
+      name: bolt
+    {{- if .Values.platform.enabled }}
+    - port: 3000
+      targetPort: platform
+      protocol: TCP
+      name: platform
+    {{- end }}
+  selector:
+    {{- include "memgraph.selectorLabels" . | nindent 4 }}

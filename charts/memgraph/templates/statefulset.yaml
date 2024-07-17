@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "memgraph.fullname" . }}
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "memgraph.fullname" . }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "memgraph.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "memgraph.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "memgraph.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+       {{- if .Values.memgraph.dataset.enabled }}
+        - name: curl
+          image: curlimages/curl:8.7.1
+          env:
+            - name: DATASET_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.memgraph.dataset.secretName }} 
+                  key:  {{ .Values.memgraph.dataset.usernameSecretKey }}
+            - name: DATASET_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.memgraph.dataset.secretName }} 
+                  key:  {{ .Values.memgraph.dataset.passwordSecretKey}}
+          args:
+            - -vfL
+            - {{ .Values.memgraph.dataset.url | quote }}
+            - -u
+            - "$(DATASET_USERNAME):$(DATASET_PASSWORD)"
+            - -o 
+            - /dataset/dataset.cypherl
+          volumeMounts:
+            - name: dataset
+              mountPath: /dataset
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.memgraph.pullPolicy }}
+          command: ["/usr/lib/memgraph/memgraph"]
+          args:
+          {{- range .Values.memgraphConfig }}
+          - {{ . | quote }}
+          {{- end }}
+          {{- if .Values.memgraph.dataset.enabled }}
+          - --init-data-file=/dataset/dataset.cypherl
+          {{- end }}
+
+          {{- if or .Values.memgraph.env .Values.memgraph.password }}
+          env:
+          {{- if .Values.memgraph.password }}
+            - name: MEMGRAPH_USER
+              value: "memgraph"
+            - name: MEMGRAPH_PASSWORD
+              value: {{ .Values.memgraph.password | quote }}
+          {{- end }}
+          {{- with .Values.memgraph.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          envFrom:
+          {{- with .Values.memgraph.envFrom }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.memgraph.existingLicenseSecret }}
+            - secretRef:
+                name: {{ .Values.memgraph.existingLicenseSecret }}
+          {{- end }}
+          volumeMounts:
+            - name: dataset
+              mountPath: /dataset
+          ports:
+            - name: bolt
+              containerPort: 7687
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 7687
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 7687
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.platform.enabled }}
+        - name: {{ .Chart.Name }}-platform
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.lab.repository }}:{{ .Values.image.lab.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.lab.pullPolicy }}
+          ports:
+            - name: platform
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: platform
+          readinessProbe:
+            httpGet:
+              path: /
+              port: platform
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: dataset
+          emptyDir: {}
