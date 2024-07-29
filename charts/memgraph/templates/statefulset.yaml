@@ -124,6 +124,14 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.lab.repository }}:{{ .Values.image.lab.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.lab.pullPolicy }}
+          env:
+          {{- with .Values.platform.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.ingressRoute.enabled }}
+            - name: AUTH_OIDC_ENTRA_ID_CALLBACK_URL
+              value: 'https://{{- include "memgraph.defaultHostUrl" . }}/auth/providers/oidc-entra-id/callback'
+          {{- end }}
           envFrom:
           {{- with .Values.platform.envFrom }}
             {{- toYaml . | nindent 12 }}

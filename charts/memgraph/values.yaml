@@ -67,6 +67,7 @@ memgraph:
 
 platform:
   enabled: true
+  env: []
   envFrom: []
     # - configMapRef:
     #     name: config-map-name
