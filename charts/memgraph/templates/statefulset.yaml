@@ -69,6 +69,9 @@ spec:
           {{- if .Values.memgraph.dataset.enabled }}
           - --init-data-file=/dataset/dataset.cypherl
           {{- end }}
+          {{- if .Values.memgraph.initFile.enabled }}
+          - --init-file=/memgraph-init/init-file.cypherl
+          {{- end }}
 
           {{- if or .Values.memgraph.env .Values.memgraph.password }}
           env:
@@ -93,6 +96,10 @@ spec:
           volumeMounts:
             - name: dataset
               mountPath: /dataset
+          {{- if .Values.memgraph.initFile.enabled }}
+            - name: init-file
+              mountPath: /memgraph-init
+          {{- end }}
           ports:
             - name: bolt
               containerPort: 7687
@@ -117,6 +124,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.lab.repository }}:{{ .Values.image.lab.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.lab.pullPolicy }}
+          envFrom:
+          {{- with .Values.platform.envFrom }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: platform
               containerPort: 3000
@@ -147,3 +158,8 @@ spec:
       volumes:
         - name: dataset
           emptyDir: {}
+      {{- if .Values.memgraph.initFile.enabled }}
+        - configMap:
+            name: {{ include "memgraph.fullname" . }}-init-file-configmap
+          name: init-file
+      {{- end }}
