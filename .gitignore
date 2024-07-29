@@ -244,5 +244,8 @@ com_crashlytics_export_strings.xml
 .env*
 !.env.example
 
+reports
+.npmrc
+
 # Chart
 template.yaml
