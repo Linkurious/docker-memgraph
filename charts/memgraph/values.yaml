@@ -129,6 +129,7 @@ memgraphConfig:
   - "--auth-module-mappings=oidc-entra-id"
     # - "--storage-mode=ON_DISK_TRANSACTIONAL"
   - "--memory-limit=1536"
+  - "--query-execution-timeout-sec=7200"
   # for efficient schema sampling
   - "--storage-enable-schema-metadata=true"
   - "--storage-automatic-label-index-creation-enabled=true"
