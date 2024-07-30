@@ -40,6 +40,14 @@ memgraph:
   ## and "MEMGRAPH_ORGANIZATION_NAME"
   existingLicenseSecret: ""
 
+  initFile:
+    enabled: false
+    data:
+      init-file.cypherl: |-
+        CREATE ROLE IF NOT EXISTS memadmin;
+        GRANT ALL PRIVILEGES TO memadmin;
+
+
   dataset:
     ## Enable the dataset
     ##
@@ -59,6 +67,16 @@ memgraph:
 
 platform:
   enabled: true
+  env: []
+  envFrom: []
+    # - configMapRef:
+    #     name: config-map-name
+    # - secretRef:
+    #     name: secret-name
+    #
+
+sso:
+  entraIdEnabled: false
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -108,6 +126,7 @@ ingressRoute:
 memgraphConfig:
   - "--also-log-to-stderr=true"
   - "--log-level=TRACE"
+  - "--auth-module-mappings=oidc-entra-id"
     # - "--storage-mode=ON_DISK_TRANSACTIONAL"
   - "--memory-limit=1536"
   # for efficient schema sampling
@@ -116,6 +135,7 @@ memgraphConfig:
   - "--storage-automatic-edge-type-index-creation-enabled=true"
   # for efficiently loading edges by ID
   - "--storage-enable-edges-metadata=true"
+
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

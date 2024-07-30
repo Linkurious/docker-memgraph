@@ -1,0 +1,10 @@
+{{- if .Values.memgraph.initFile.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "memgraph.fullname" . }}-init-file-configmap
+  labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
+data:
+  {{- .Values.memgraph.initFile.data  | toYaml | nindent 2 }}
+{{- end }}
