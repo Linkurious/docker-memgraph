@@ -114,6 +114,8 @@ memgraphConfig:
   - "--storage-enable-schema-metadata=true"
   - "--storage-automatic-label-index-creation-enabled=true"
   - "--storage-automatic-edge-type-index-creation-enabled=true"
+  # for efficiently loading edges by ID
+  - "--storage-enable-edges-metadata=true"
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
