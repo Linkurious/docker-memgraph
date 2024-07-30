@@ -73,13 +73,19 @@ spec:
           - --init-file=/memgraph-init/init-file.cypherl
           {{- end }}
 
-          {{- if or .Values.memgraph.env .Values.memgraph.password }}
+          {{- if or .Values.memgraph.env (or .Values.memgraph.password .Values.sso.entraIdEnabled ) }}
           env:
           {{- if .Values.memgraph.password }}
             - name: MEMGRAPH_USER
               value: "memgraph"
             - name: MEMGRAPH_PASSWORD
               value: {{ .Values.memgraph.password | quote }}
+          {{- end }}
+          {{- if .Values.sso.entraIdEnabled }}
+            - name: 'MEMGRAPH_SSO_ENTRA_ID_OIDC_USERNAME'
+              value: 'access:preferred_username'
+            - name: 'MEMGRAPH_SSO_ENTRA_ID_OIDC_ROLE_MAPPING'
+              value: 'entra.admin:memadmin; entra.user:memuser'
           {{- end }}
           {{- with .Values.memgraph.env }}
           {{- toYaml . | nindent 12 }}
@@ -128,9 +134,13 @@ spec:
           {{- with .Values.platform.env }}
           {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.ingressRoute.enabled }}
+          {{- if .Values.sso.entraIdEnabled }}
             - name: AUTH_OIDC_ENTRA_ID_CALLBACK_URL
               value: 'https://{{- include "memgraph.defaultHostUrl" . }}/auth/providers/oidc-entra-id/callback'
+            - name: AUTH_OIDC_ENTRA_ID_IS_ENABLED
+              value: "true"
+            - name: AUTH_OIDC_ENTRA_ID_DISPLAY_NAME
+              value: 'Entra ID'
           {{- end }}
           envFrom:
           {{- with .Values.platform.envFrom }}

@@ -73,6 +73,10 @@ platform:
     #     name: config-map-name
     # - secretRef:
     #     name: secret-name
+    #
+
+sso:
+  entraIdEnabled: false
 
 serviceAccount:
   # Specifies whether a service account should be created
