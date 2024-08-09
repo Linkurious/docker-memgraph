@@ -47,8 +47,7 @@ memgraph:
         CREATE ROLE IF NOT EXISTS memadmin;
         GRANT ALL PRIVILEGES TO memadmin;
         GRANT CREATE_DELETE ON LABELS * TO memadmin;
-        GRANT UPDATE ON LABELS * TO memadmin;
-        GRANT READ ON LABELS * TO memadmin;
+        GRANT CREATE_DELETE ON EDGE_TYPES * TO memadmin;
 
 
   dataset:
