@@ -46,6 +46,8 @@ memgraph:
       init-file.cypherl: |-
         CREATE ROLE IF NOT EXISTS memadmin;
         GRANT ALL PRIVILEGES TO memadmin;
+        GRANT CREATE_DELETE ON LABELS * TO memadmin;
+        GRANT CREATE_DELETE ON EDGE_TYPES * TO memadmin;
 
 
   dataset:
