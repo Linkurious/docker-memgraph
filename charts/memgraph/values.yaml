@@ -133,7 +133,7 @@ memgraphConfig:
   - "--memory-limit=1536"
   - "--query-execution-timeout-sec=7200"
   # for efficient schema sampling
-  - "--schema-info-enabled=true"
+  - "--storage-enable-schema-metadata=true"
   - "--storage-automatic-label-index-creation-enabled=true"
   - "--storage-automatic-edge-type-index-creation-enabled=true"
   # for efficiently loading edges by ID
