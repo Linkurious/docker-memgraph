@@ -10,12 +10,12 @@ image:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     # See https://hub.docker.com/r/memgraph/memgraph-mage/tags
-    tag: "1.18-memgraph-2.18"
+    tag: "1.22-memgraph-2.22"
   lab:
     repository: memgraph/lab
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "2.15.0"
+    tag: "2.19.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -133,7 +133,7 @@ memgraphConfig:
   - "--memory-limit=1536"
   - "--query-execution-timeout-sec=7200"
   # for efficient schema sampling
-  - "--storage-enable-schema-metadata=true"
+  - "--schema-info-enabled=true"
   - "--storage-automatic-label-index-creation-enabled=true"
   - "--storage-automatic-edge-type-index-creation-enabled=true"
   # for efficiently loading edges by ID
