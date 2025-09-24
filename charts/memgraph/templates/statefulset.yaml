@@ -146,6 +146,10 @@ spec:
           {{- with .Values.platform.envFrom }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if .Values.memgraph.existingLicenseSecret }}
+            - secretRef:
+                name: {{ .Values.memgraph.existingLicenseSecret }}
+          {{- end }}
           ports:
             - name: platform
               containerPort: 3000
