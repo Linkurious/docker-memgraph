@@ -5,7 +5,7 @@ lkeSubReleaseJob {
   projectName = "linkurious/docker-memgraph"
 
   releaseType = 'docker'
-  reviewers = "Linkurious/devops"
+  reviewers = "Linkurious/devopschapter"
 
   runAssetWaiter = true
 
