@@ -13,7 +13,6 @@ image:
   lab:
     repository: memgraph/lab
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
 
 imagePullSecrets: []
 nameOverride: ""
