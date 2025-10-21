@@ -21,7 +21,7 @@ version: 0.1.11
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-# renovate: image=memgraph/memgraph-platform
+# renovate: image=memgraph/memgraph-mage
 appVersion: "3.6.1"
 maintainers:
   - name: enys
