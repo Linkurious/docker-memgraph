@@ -22,6 +22,6 @@ version: 0.1.11
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=memgraph/memgraph-mage
-appVersion: "2.18.0"
+appVersion: "3.6.1"
 maintainers:
   - name: enys
