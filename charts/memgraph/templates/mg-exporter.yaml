@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: mg-exporter-config
   namespace: {{ .Values.prometheus.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
 data:
   standalone_config.yaml: |
     exporter:
@@ -20,6 +22,7 @@ metadata:
   name: mg-exporter
   namespace: {{ .Values.prometheus.namespace | default .Release.Namespace }}
   labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
     app: mg-exporter
 spec:
   replicas: 1
@@ -56,6 +59,7 @@ metadata:
   name: mg-exporter
   namespace: {{ .Values.prometheus.namespace | default .Release.Namespace }}
   labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
     app: mg-exporter
 spec:
   selector:
@@ -73,6 +77,7 @@ metadata:
   name: mg-exporter
   namespace: {{ .Values.prometheus.namespace | default .Release.Namespace }}
   labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
     release: {{ .Values.prometheus.serviceMonitor.kubePrometheusStackReleaseName }}
 spec:
   selector:
