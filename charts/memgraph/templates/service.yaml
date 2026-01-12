@@ -4,13 +4,28 @@ metadata:
   name: {{ include "memgraph.fullname" . }}
   labels:
     {{- include "memgraph.labels" . | nindent 4 }}
+  {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: 7687
-      targetPort: bolt
+    {{- if .Values.service.enableBolt }}
+    - port: {{ .Values.service.boltPort }}
+      targetPort: {{ .Values.service.boltPort }}
       protocol: TCP
-      name: bolt
+      name: tcp-bolt-port
+    {{- end }}
+    {{- if .Values.service.enableHttpMonitoring }}
+    - port: {{ .Values.service.httpPortMonitoring }}
+      targetPort: {{ .Values.service.httpPortMonitoring }}
+      protocol: TCP
+      name: http-monitoring-port
+    {{- end }}
     {{- if .Values.platform.enabled }}
     - port: 3000
       targetPort: platform
