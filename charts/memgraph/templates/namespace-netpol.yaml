@@ -22,4 +22,16 @@ spec:
       ports:
       - port: bolt
       - port: platform
+      {{- if and .Values.prometheus.enabled .Values.service.enableHttpMonitoring }}
+      - port: http
+      {{- end }}
+    {{- if .Values.prometheus.enabled }}
+    # Allow memgraph exporter to access memgraph HTTP monitoring port
+    - from:
+      - podSelector:
+          matchLabels:
+            {{- include "memgraphExporter.selectorLabels" . | nindent 12 }}
+      ports:
+      - port: http
+    {{- end }}
 {{- end }}
