@@ -108,7 +108,7 @@ service:
   enableBolt: true
   boltPort: 7687
   # HTTP Monitoring (required for Prometheus exporter)
-  enableHttpMonitoring: false
+  enableHttpMonitoring: true
   httpPortMonitoring: 9091
   annotations: {}
   labels: {}
