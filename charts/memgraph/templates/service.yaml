@@ -16,7 +16,7 @@ spec:
   ports:
     {{- if .Values.service.enableBolt }}
     - port: {{ .Values.service.boltPort }}
-      targetPort: {{ .Values.service.boltPort }}
+      targetPort: bolt
       protocol: TCP
       name: tcp-bolt-port
     {{- end }}
