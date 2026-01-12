@@ -141,7 +141,6 @@ memgraphConfig:
   - "--schema-info-enabled=true"
   - "--storage-automatic-label-index-creation-enabled=true"
   # HTTP metrics for Prometheus monitoring
-  - "--metrics-enabled=true"
   - "--metrics-address=0.0.0.0"
   - "--metrics-port=9091"
   - "--storage-automatic-edge-type-index-creation-enabled=true"
