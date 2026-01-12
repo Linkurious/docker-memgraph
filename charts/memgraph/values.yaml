@@ -184,7 +184,7 @@ affinity: {}
 # Prometheus monitoring configuration
 prometheus:
   enabled: true
-  namespace: null # Namespace where K8s resources from mg-exporter.yaml will be installed. If null, uses Release.Namespace
+  namespace:  # Namespace where K8s resources from mg-exporter.yaml will be installed. If null, uses Release.Namespace
   memgraphExporter:
     port: 9115
     pullFrequencySeconds: 5
