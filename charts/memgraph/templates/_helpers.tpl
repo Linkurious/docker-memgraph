@@ -66,3 +66,38 @@ Default external url
 {{- define "memgraph.defaultHostUrl" -}}
 {{- print   (include "memgraph.fullname" .) "."  .Release.Namespace "." .Values.hostPostfix  -}}
 {{- end }}
+
+{{/*
+Memgraph Exporter name
+*/}}
+{{- define "memgraphExporter.name" -}}
+{{- printf "%s-exporter" (include "memgraph.name" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Memgraph Exporter fullname
+*/}}
+{{- define "memgraphExporter.fullname" -}}
+{{- printf "%s-exporter" (include "memgraph.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Memgraph Exporter labels
+*/}}
+{{- define "memgraphExporter.labels" -}}
+helm.sh/chart: {{ include "memgraph.chart" . }}
+{{ include "memgraphExporter.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: metrics-exporter
+{{- end }}
+
+{{/*
+Memgraph Exporter selector labels
+*/}}
+{{- define "memgraphExporter.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "memgraphExporter.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

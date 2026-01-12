@@ -110,6 +110,11 @@ spec:
             - name: bolt
               containerPort: 7687
               protocol: TCP
+            {{- if .Values.service.enableHttpMonitoring }}
+            - name: http
+              containerPort: {{ .Values.service.httpPortMonitoring }}
+              protocol: TCP
+            {{- end }}
           readinessProbe:
             tcpSocket:
               port: 7687
