@@ -104,6 +104,14 @@ securityContext:
 
 service:
   type: ClusterIP
+  # Bolt Protocol
+  enableBolt: true
+  boltPort: 7687
+  # HTTP Monitoring (required for Prometheus exporter)
+  enableHttpMonitoring: true
+  httpPortMonitoring: 9091
+  annotations: {}
+  labels: {}
 
 hostPostfix: k8s.dev.linkurious.net
 ingressRoute:
@@ -132,6 +140,9 @@ memgraphConfig:
   # for efficient schema sampling
   - "--schema-info-enabled=true"
   - "--storage-automatic-label-index-creation-enabled=true"
+  # HTTP metrics for Prometheus monitoring
+  - "--metrics-address=0.0.0.0"
+  - "--metrics-port=9091"
   - "--storage-automatic-edge-type-index-creation-enabled=true"
   # for efficiently loading edges by ID
   - "--storage-enable-edges-metadata=true"
@@ -168,3 +179,20 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Prometheus monitoring configuration
+prometheus:
+  enabled: true
+  namespace:  # Namespace where K8s resources from mg-exporter.yaml will be installed. If null, uses Release.Namespace
+  memgraphExporter:
+    port: 9115
+    pullFrequencySeconds: 5
+    repository: memgraph/prometheus-exporter
+    tag: 0.2.1
+  serviceMonitor:
+    enabled: true
+    kubePrometheusStackReleaseName: kube-prometheus-stack
+    interval: 15s
+
+# Note: When prometheus.enabled is true, you should also set:
+# service.enableHttpMonitoring: true
