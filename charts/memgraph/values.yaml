@@ -55,7 +55,7 @@ memgraph:
 
   prometheus:
     enabled: true
-    namespace: null  # null = same as Release.Namespace
+    namespace: '' 
     memgraphExporter:
       port: 9115
       pullFrequencySeconds: 5
