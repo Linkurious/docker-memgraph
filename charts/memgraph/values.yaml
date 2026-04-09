@@ -12,7 +12,11 @@ memgraph:
 
   replicaCount: 1
 
+  sysctlInitContainer:
+    enabled: true
+
   memgraphConfig:
+    - "--data-directory=/var/lib/memgraph/mg_data"
     - "--also-log-to-stderr=true"
     - "--log-level=TRACE"
     - "--memory-limit=1536"
@@ -115,7 +119,6 @@ networkPolicies:
   create: true
   allowSameNamespaceIngress: true
   allowAllNamespaceIngress: false
-
 # Traefik IngressRoute
 hostPostfix: k8s.dev.linkurious.net
 ingressRoute:
