@@ -57,6 +57,7 @@ spec:
       {{- include "memgraph.labSelectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
+    - Egress
   ingress:
     - from:
       {{- if .Values.networkPolicies.allowSameNamespaceIngress }}
@@ -67,6 +68,15 @@ spec:
       {{- end }}
       ports:
       - port: {{ (index .Values "memgraph-lab" "service" "port") | default 3000 }}
+        protocol: TCP
+  egress:
+    # Allow Lab to connect to the Memgraph DB pod (Bolt protocol)
+    - to:
+      - podSelector:
+          matchLabels:
+            {{- include "memgraph.dbSelectorLabels" . | nindent 12 }}
+      ports:
+      - port: {{ (index .Values "memgraph" "service" "boltPort") | default 7687 }}
         protocol: TCP
 {{- end }}
 ---

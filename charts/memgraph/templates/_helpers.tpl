@@ -54,7 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Default external URL for IngressRoute
 */}}
 {{- define "memgraph.defaultHostUrl" -}}
-{{- print (include "memgraph.fullname" .) "." .Release.Namespace "." .Values.hostPostfix -}}
+{{- print (include "memgraph.fullname" .) "." .Release.Namespace "." .Values.global.hostPostfix -}}
 {{- end }}
 
 {{/*

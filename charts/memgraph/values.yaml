@@ -1,6 +1,10 @@
 # Default values for the Memgraph umbrella chart.
 # Sub-chart values are passed through via the 'memgraph' and 'memgraph-lab' keys.
 
+# Global values (accessible by sub-charts as .Values.global.*)
+global:
+  hostPostfix: k8s.preprod.linkurious.net
+
 # ──────────────────────────────────────────────
 # Memgraph standalone sub-chart values
 # https://github.com/memgraph/helm-charts/tree/main/charts/memgraph
@@ -92,10 +96,7 @@ memgraph-lab:
 
   env:
     - name: QUICK_CONNECT_MG_HOST
-      # Must match the memgraph sub-chart service name.
-      # When release name contains 'memgraph', Helm deduplicates to just <release-name>.
-      # Default assumes release name = 'memgraph'. Adjust if using a different release name.
-      value: memgraph
+      value: '{{ include "memgraph.dbServiceName" . }}'
     - name: QUICK_CONNECT_MG_PORT
       value: "7687"
 
@@ -120,7 +121,7 @@ networkPolicies:
   allowSameNamespaceIngress: true
   allowAllNamespaceIngress: false
 # Traefik IngressRoute
-hostPostfix: k8s.dev.linkurious.net
+hostPostfix: k8s.preprod.linkurious.net
 ingressRoute:
   enabled: true
   className: ""
