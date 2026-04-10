@@ -140,5 +140,5 @@ initFile:
     init-file.cypherl: |-
       CREATE ROLE IF NOT EXISTS memadmin;
       GRANT ALL PRIVILEGES TO memadmin;
-      GRANT CREATE_DELETE ON LABELS * TO memadmin;
-      GRANT CREATE_DELETE ON EDGE_TYPES * TO memadmin;
+      GRANT CREATE,DELETE,READ ON NODES CONTAINING LABELS * TO memadmin;
+      GRANT CREATE,DELETE,READ ON EDGES OF TYPE * TO memadmin;
