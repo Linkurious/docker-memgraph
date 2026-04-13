@@ -41,17 +41,19 @@ memgraph:
     httpPortMonitoring: 9091
 
   persistentVolumeClaim:
-    createStorageClaim: true
+    createStorageClaim: false
     storageSize: 10Gi
-    createLogStorage: true
+    createLogStorage: false
     logStorageSize: 1Gi
 
-  resources: {}
-    # limits:
-    #   memory: 1794Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 1794Mi
+  # We reccomend setting memory limit 200Mi higher than the above memgraph --memory-limit
+  resources:
+    limits:
+      # cpu: 100m
+      memory: 1794Mi
+    requests:
+      cpu: 100m
+      memory: 1794Mi
 
   extraEnv: []
   extraVolumes: []
