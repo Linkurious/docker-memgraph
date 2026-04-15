@@ -25,11 +25,13 @@ memgraph:
     - "--log-level=TRACE"
     - "--memory-limit=1536"
     - "--query-execution-timeout-sec=7200"
+    # for efficient schema sampling
     - "--schema-info-enabled=true"
     - "--storage-automatic-label-index-creation-enabled=true"
     - "--metrics-address=0.0.0.0"
     - "--metrics-port=9091"
     - "--storage-automatic-edge-type-index-creation-enabled=true"
+    # for efficiently loading edges by ID
     - "--storage-enable-edges-metadata=true"
 
   service:
