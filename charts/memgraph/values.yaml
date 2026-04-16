@@ -67,7 +67,7 @@ memgraph:
 
   prometheus:
     enabled: true
-    namespace: '' 
+    namespace: ''
     memgraphExporter:
       port: 9115
       pullFrequencySeconds: 5
