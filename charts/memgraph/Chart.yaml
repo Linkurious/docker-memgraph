@@ -2,7 +2,7 @@ apiVersion: v2
 name: memgraph
 description: Umbrella Helm chart for Memgraph (standalone + Lab) on Kubernetes
 type: application
-version: 0.1.13
+version: 0.2.0
 # renovate: image=memgraph/memgraph-mage
 appVersion: "3.9.0"
 maintainers:
