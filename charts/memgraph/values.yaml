@@ -47,8 +47,9 @@ memgraph:
     storageSize: 10Gi
     createLogStorage: false
     logStorageSize: 1Gi
+    existingClaim: ""
 
-  # We reccomend setting memory limit 200Mi higher than the above memgraph --memory-limit
+  # We recommend setting memory limit 200Mi higher than the above memgraph --memory-limit
   resources:
     limits:
       # cpu: 100m
