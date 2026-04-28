@@ -30,14 +30,18 @@ spec:
     {{- if (index .Values "memgraph" "prometheus" "enabled") }}
     # Allow Prometheus exporter to access HTTP monitoring port
     - from:
+      {{- $promNs := (index .Values "memgraph" "prometheus" "namespace") }}
+      {{- if and $promNs (ne ($promNs | toString) (.Release.Namespace | toString)) }}
       - podSelector:
           matchLabels:
             app: mg-exporter
-      {{- $promNs := (index .Values "memgraph" "prometheus" "namespace") }}
-      {{- if and $promNs (ne ($promNs | toString) (.Release.Namespace | toString)) }}
-      - namespaceSelector:
+        namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: {{ $promNs }}
+      {{- else }}
+      - podSelector:
+          matchLabels:
+            app: mg-exporter
       {{- end }}
       ports:
       - port: {{ (index .Values "memgraph" "service" "httpPortMonitoring") | default 9091 }}
@@ -97,14 +101,18 @@ spec:
     - Egress
   egress:
     - to:
+      {{- $promNs := (index .Values "memgraph" "prometheus" "namespace") }}
+      {{- if and $promNs (ne ($promNs | toString) (.Release.Namespace | toString)) }}
       - podSelector:
           matchLabels:
             {{- include "memgraph.dbSelectorLabels" . | nindent 12 }}
-      {{- $promNs := (index .Values "memgraph" "prometheus" "namespace") }}
-      {{- if and $promNs (ne ($promNs | toString) (.Release.Namespace | toString)) }}
-      - namespaceSelector:
+        namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      {{- else }}
+      - podSelector:
+          matchLabels:
+            {{- include "memgraph.dbSelectorLabels" . | nindent 12 }}
       {{- end }}
       ports:
       - port: {{ (index .Values "memgraph" "service" "httpPortMonitoring") | default 9091 }}
