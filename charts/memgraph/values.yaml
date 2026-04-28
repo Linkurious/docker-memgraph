@@ -126,7 +126,6 @@ networkPolicies:
   allowSameNamespaceIngress: true
   allowAllNamespaceIngress: false
 # Traefik IngressRoute
-hostPostfix: k8s.preprod.linkurious.net
 ingressRoute:
   enabled: true
   className: ""
