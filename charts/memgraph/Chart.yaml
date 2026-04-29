@@ -1,27 +1,18 @@
 apiVersion: v2
 name: memgraph
-description: A Helm chart for Memgraph on Kubernetes
-
-# A chart can be either an 'application' or a 'library' chart.
-#
-# Application charts are a collection of templates that can be packaged into versioned archives
-# to be deployed.
-#
-# Library charts provide useful utilities or functions for the chart developer. They're included as
-# a dependency of application charts to inject those utilities and functions into the rendering
-# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+description: Umbrella Helm chart for Memgraph (standalone + Lab) on Kubernetes
 type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
-# Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.12
-
-# This is the version number of the application being deployed. This version number should be
-# incremented each time you make changes to the application. Versions are not expected to
-# follow Semantic Versioning. They should reflect the version the application is using.
-# It is recommended to use it with quotes.
+version: 0.2.0
 # renovate: image=memgraph/memgraph-mage
-appVersion: "3.6.1"
+appVersion: "3.9.0"
 maintainers:
   - name: enys
+dependencies:
+  - name: memgraph
+    version: 0.2.19
+    repository: https://memgraph.github.io/helm-charts
+    # repository: file:///Users/enys/projets/repos/infra/memgraph-helm-charts/charts/memgraph
+  - name: memgraph-lab
+    version: 0.1.16
+    # repository: file:///Users/enys/projets/repos/infra/memgraph-helm-charts/charts/memgraph-lab
+    repository: https://memgraph.github.io/helm-charts

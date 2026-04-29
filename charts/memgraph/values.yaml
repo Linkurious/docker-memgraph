@@ -1,198 +1,148 @@
-# Default values for memgraph.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# Default values for the Memgraph umbrella chart.
+# Sub-chart values are passed through via the 'memgraph' and 'memgraph-lab' keys.
 
-replicaCount: 1
+# Global values (accessible by sub-charts as .Values.global.*)
+global:
+  hostPostfix: k8s.preprod.linkurious.net
 
-image:
-  memgraph:
-    repository: memgraph/memgraph-mage
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    # See https://hub.docker.com/r/memgraph/memgraph-mage/tags
-  lab:
-    repository: memgraph/lab
-    pullPolicy: IfNotPresent
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
+# ──────────────────────────────────────────────
+# Memgraph standalone sub-chart values
+# https://github.com/memgraph/helm-charts/tree/main/charts/memgraph
+# ──────────────────────────────────────────────
 memgraph:
-  password: ""
-  ## Environment variables to pass to memgraph
-  ##
-  env: []
-    # - name: "LKE_AUTH_REQUIRED"
-    #   value: "true"
+  image:
+    repository: docker.io/memgraph/memgraph-mage
+    # tag: ""  # defaults to sub-chart appVersion
 
-  ## envFrom to pass to server
-  ##
-  envFrom: []
-    # - configMapRef:
-    #     name: config-map-name
-    # - secretRef:
-    #     name: secret-name
-  ## Provide an existing secret containing the license key, it must contain a key named "MEMGRAPH_ENTERPRISE_LICENSE"
-  ## and "MEMGRAPH_ORGANIZATION_NAME"
-  existingLicenseSecret: ""
+  replicaCount: 1
 
-  initFile:
+  sysctlInitContainer:
+    enabled: true
+
+  memgraphConfig:
+    - "--data-directory=/var/lib/memgraph/mg_data"
+    - "--also-log-to-stderr=true"
+    - "--log-level=TRACE"
+    - "--memory-limit=1536"
+    - "--query-execution-timeout-sec=7200"
+    # for efficient schema sampling
+    - "--schema-info-enabled=true"
+    - "--storage-automatic-label-index-creation-enabled=true"
+    - "--metrics-address=0.0.0.0"
+    - "--metrics-port=9091"
+    - "--storage-automatic-edge-type-index-creation-enabled=true"
+    # for efficiently loading edges by ID
+    - "--storage-enable-edges-metadata=true"
+
+  service:
+    type: ClusterIP
+    enableBolt: true
+    boltPort: 7687
+    enableWebsocketMonitoring: false
+    enableHttpMonitoring: true
+    httpPortMonitoring: 9091
+
+  persistentVolumeClaim:
+    createStorageClaim: false
+    storageSize: 10Gi
+    createLogStorage: false
+    logStorageSize: 1Gi
+    existingClaim: ""
+
+  # We recommend setting memory limit 200Mi higher than the above memgraph --memory-limit
+  resources:
+    limits:
+      # cpu: 100m
+      memory: 1794Mi
+    requests:
+      cpu: 100m
+      memory: 1794Mi
+
+  extraEnv: []
+  extraVolumes: []
+  extraVolumeMounts: []
+  initContainers: []
+
+  secrets:
     enabled: false
-    data:
-      init-file.cypherl: |-
-        CREATE ROLE IF NOT EXISTS memadmin;
-        GRANT ALL PRIVILEGES TO memadmin;
-        GRANT CREATE_DELETE ON LABELS * TO memadmin;
-        GRANT CREATE_DELETE ON EDGE_TYPES * TO memadmin;
 
+  prometheus:
+    enabled: true
+    namespace: ''
+    memgraphExporter:
+      port: 9115
+      pullFrequencySeconds: 5
+      repository: docker.io/memgraph/prometheus-exporter
+      tag: 0.2.1
+    serviceMonitor:
+      enabled: true
+      kubePrometheusStackReleaseName: kube-prometheus-stack
+      interval: 15s
 
-  dataset:
-    ## Enable the dataset
-    ##
-    enabled: false
-    ## The name of the dataset to use
-    ##
-    url: ""
-    ## The name of the secret containing login information for the dataset
-    ##
-    secretName: ""
-    ## The key in the secret containing the user to download the dataset
-    ##
-    usernameSecretKey: ""
-    ## The key in the secret containing the password to download the dataset
-    ##
-    passwordSecretKey: ""
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
 
-platform:
-  enabled: true
-  env: []
-  envFrom: []
-    # - configMapRef:
-    #     name: config-map-name
-    # - secretRef:
-    #     name: secret-name
-    #
+  nodeSelector: {}
+  tolerations: []
+  nodeAffinity: {}
 
-sso:
-  entraIdEnabled: false
+# ──────────────────────────────────────────────
+# Memgraph Lab sub-chart values
+# https://github.com/memgraph/helm-charts/tree/main/charts/memgraph-lab
+# ──────────────────────────────────────────────
+memgraph-lab:
+  image:
+    repository: docker.io/memgraph/lab
+    # tag: ""  # defaults to sub-chart appVersion
 
-serviceAccount:
-  # Specifies whether a service account should be created
+  replicaCount: 1
+
+  env:
+    - name: QUICK_CONNECT_MG_HOST
+      value: '{{ include "memgraph.dbServiceName" . }}'
+    - name: QUICK_CONNECT_MG_PORT
+      value: "7687"
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  resources: {}
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+# ──────────────────────────────────────────────
+# Umbrella-chart-only values (not passed to sub-charts)
+# ──────────────────────────────────────────────
+
+# Network policies
+networkPolicies:
   create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-podAnnotations: {}
-
-podSecurityContext:
-  runAsNonRoot: true
-  runAsUser: 101
-  runAsGroup: 101
-
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-    - ALL
-  seccompProfile:
-    type: RuntimeDefault
-  # readOnlyRootFilesystem: true
-
-service:
-  type: ClusterIP
-  # Bolt Protocol
-  enableBolt: true
-  boltPort: 7687
-  # HTTP Monitoring (required for Prometheus exporter)
-  enableHttpMonitoring: true
-  httpPortMonitoring: 9091
-  annotations: {}
-  labels: {}
-
-hostPostfix: k8s.dev.linkurious.net
+  allowSameNamespaceIngress: true
+  allowAllNamespaceIngress: false
+# Traefik IngressRoute
 ingressRoute:
   enabled: true
   className: ""
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
   hosts:
     - paths:
         - path: /
           pathType: ImplementationSpecific
-      # host: memgraph.k8s.dev.linkurious.net
   tls:
     secretName: wildcard-default-cert
-    hosts: []
-      # - chart-example.local
 
-memgraphConfig:
-  - "--also-log-to-stderr=true"
-  - "--log-level=TRACE"
-  - "--auth-module-mappings=oidc-entra-id"
-    # - "--storage-mode=ON_DISK_TRANSACTIONAL"
-  - "--memory-limit=1536"
-  - "--query-execution-timeout-sec=7200"
-  # for efficient schema sampling
-  - "--schema-info-enabled=true"
-  - "--storage-automatic-label-index-creation-enabled=true"
-  # HTTP metrics for Prometheus monitoring
-  - "--metrics-address=0.0.0.0"
-  - "--metrics-port=9091"
-  - "--storage-automatic-edge-type-index-creation-enabled=true"
-  # for efficiently loading edges by ID
-  - "--storage-enable-edges-metadata=true"
-
-resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # We reccomend setting memory limit 200Mi higher than the above memgraph --memory-limit
-  limits:
-  #   cpu: 100m
-    memory: 1794Mi
-  requests:
-    cpu: 100m
-    memory: 1794Mi
-
-autoscaling:
+# Init file ConfigMap (Cypher initialization script)
+initFile:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# Default network policy rules used by all components
-networkPolicies:
-  # -- Create NetworkPolicy objects for all components
-  create: true
-  allowSameNamespaceIngress: true
-  allowAllNamespaceIngress: false
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-# Prometheus monitoring configuration
-prometheus:
-  enabled: true
-  namespace:  # Namespace where K8s resources from mg-exporter.yaml will be installed. If null, uses Release.Namespace
-  memgraphExporter:
-    port: 9115
-    pullFrequencySeconds: 5
-    repository: memgraph/prometheus-exporter
-    tag: 0.2.1
-  serviceMonitor:
-    enabled: true
-    kubePrometheusStackReleaseName: kube-prometheus-stack
-    interval: 15s
-
-# Note: When prometheus.enabled is true, you should also set:
-# service.enableHttpMonitoring: true
+  data:
+    init-file.cypherl: |-
+      CREATE ROLE IF NOT EXISTS memadmin;
+      GRANT ALL PRIVILEGES TO memadmin;
+      GRANT CREATE,DELETE,READ ON NODES CONTAINING LABELS * TO memadmin;
+      GRANT CREATE,DELETE,READ ON EDGES OF TYPE * TO memadmin;

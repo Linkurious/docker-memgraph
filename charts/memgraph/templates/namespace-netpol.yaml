@@ -1,14 +1,15 @@
 {{- if .Values.networkPolicies.create }}
+# ── Memgraph DB ingress policy ───────────────────────────────────
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "memgraph.fullname" . }}
+  name: {{ include "memgraph.fullname" . }}-db
   labels:
     {{- include "memgraph.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-    {{- include "memgraph.selectorLabels" . | nindent 6 }}
+      {{- include "memgraph.dbSelectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
   ingress:
@@ -20,49 +21,100 @@ spec:
       - namespaceSelector: {}
       {{- end }}
       ports:
-      - port: bolt
-      - port: platform
-      {{- if and .Values.prometheus.enabled .Values.service.enableHttpMonitoring }}
-      - port: http
+      - port: {{ (index .Values "memgraph" "service" "boltPort") | default 7687 }}
+        protocol: TCP
+      {{- if (index .Values "memgraph" "service" "enableHttpMonitoring") }}
+      - port: {{ (index .Values "memgraph" "service" "httpPortMonitoring") | default 9091 }}
+        protocol: TCP
       {{- end }}
-    {{- if .Values.prometheus.enabled }}
-    # Allow memgraph exporter to access memgraph HTTP monitoring port
+    {{- if (index .Values "memgraph" "prometheus" "enabled") }}
+    # Allow Prometheus exporter to access HTTP monitoring port
     - from:
+      {{- $promNs := (index .Values "memgraph" "prometheus" "namespace") }}
+      {{- if and $promNs (ne ($promNs | toString) (.Release.Namespace | toString)) }}
       - podSelector:
           matchLabels:
-            {{- include "memgraphExporter.selectorLabels" . | nindent 12 }}
+            app: mg-exporter
+        namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: {{ $promNs }}
+      {{- else }}
+      - podSelector:
+          matchLabels:
+            app: mg-exporter
+      {{- end }}
       ports:
-      - port: http
+      - port: {{ (index .Values "memgraph" "service" "httpPortMonitoring") | default 9091 }}
+        protocol: TCP
     {{- end }}
-{{- end }}
 ---
-{{- if and .Values.networkPolicies.create .Values.prometheus.enabled }}
-# Network policy for memgraph exporter - allow egress to memgraph
+# ── Memgraph Lab ingress policy ──────────────────────────────────
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "memgraphExporter.fullname" . }}
-  namespace: {{ .Values.prometheus.namespace | default .Release.Namespace }}
+  name: {{ include "memgraph.fullname" . }}-lab
   labels:
-    {{- include "memgraphExporter.labels" . | nindent 4 }}
+    {{- include "memgraph.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "memgraphExporter.selectorLabels" . | nindent 6 }}
+      {{- include "memgraph.labSelectorLabels" . | nindent 6 }}
   policyTypes:
+    - Ingress
     - Egress
+  ingress:
+    - from:
+      {{- if .Values.networkPolicies.allowSameNamespaceIngress }}
+      - podSelector: {}
+      {{- end }}
+      {{- if .Values.networkPolicies.allowAllNamespaceIngress }}
+      - namespaceSelector: {}
+      {{- end }}
+      ports:
+      - port: {{ (index .Values "memgraph-lab" "service" "port") | default 3000 }}
+        protocol: TCP
   egress:
-    # Allow exporter to reach memgraph HTTP monitoring port
+    # Allow Lab to connect to the Memgraph DB pod (Bolt protocol)
     - to:
       - podSelector:
           matchLabels:
-            {{- include "memgraph.selectorLabels" . | nindent 12 }}
-      {{- if ne (.Values.prometheus.namespace | default .Release.Namespace) .Release.Namespace }}
-      - namespaceSelector:
+            {{- include "memgraph.dbSelectorLabels" . | nindent 12 }}
+      ports:
+      - port: {{ (index .Values "memgraph" "service" "boltPort") | default 7687 }}
+        protocol: TCP
+{{- end }}
+---
+{{- if and .Values.networkPolicies.create (index .Values "memgraph" "prometheus" "enabled") }}
+# ── Prometheus exporter egress policy ────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "memgraph.fullname" . }}-exporter
+  namespace: {{ (index .Values "memgraph" "prometheus" "namespace") | default .Release.Namespace }}
+  labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: mg-exporter
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+      {{- $promNs := (index .Values "memgraph" "prometheus" "namespace") }}
+      {{- if and $promNs (ne ($promNs | toString) (.Release.Namespace | toString)) }}
+      - podSelector:
           matchLabels:
-            name: {{ .Release.Namespace }}
+            {{- include "memgraph.dbSelectorLabels" . | nindent 12 }}
+        namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      {{- else }}
+      - podSelector:
+          matchLabels:
+            {{- include "memgraph.dbSelectorLabels" . | nindent 12 }}
       {{- end }}
       ports:
-      - port: {{ .Values.service.httpPortMonitoring }}
+      - port: {{ (index .Values "memgraph" "service" "httpPortMonitoring") | default 9091 }}
         protocol: TCP
 {{- end }}
