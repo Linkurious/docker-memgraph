@@ -7,7 +7,7 @@ load('ext://kubectl_build', 'kubectl_build')
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
 
 ctx = k8s_context()
-if ctx.endswith('k8s-dev'):
+if ctx.endswith('k8s-preprod'):
   allow_k8s_contexts(ctx)
 
 if not k8s_namespace().endswith("dev"):
@@ -40,7 +40,7 @@ if os.path.exists(internal_values_filename):
   deps += [internal_values_filename]
 
 helm_resource(
-  name=ctx.removesuffix('@k8s-dev') + '-tilt-memgraph',
+  name=ctx.removesuffix('@k8s-preprod') + '-tilt-memgraph',
   chart='charts/memgraph',
   deps=deps,
   flags=extra_values,
