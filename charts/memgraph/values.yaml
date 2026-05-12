@@ -93,6 +93,8 @@ memgraph:
 # https://github.com/memgraph/helm-charts/tree/main/charts/memgraph-lab
 # ──────────────────────────────────────────────
 memgraph-lab:
+  enabled: true
+
   image:
     repository: docker.io/memgraph/lab
     # tag: ""  # defaults to sub-chart appVersion
