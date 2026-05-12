@@ -47,6 +47,7 @@ spec:
       - port: {{ (index .Values "memgraph" "service" "httpPortMonitoring") | default 9091 }}
         protocol: TCP
     {{- end }}
+{{- if (index .Values "memgraph-lab" "enabled") }}
 ---
 # ── Memgraph Lab ingress policy ──────────────────────────────────
 apiVersion: networking.k8s.io/v1
@@ -82,6 +83,7 @@ spec:
       ports:
       - port: {{ (index .Values "memgraph" "service" "boltPort") | default 7687 }}
         protocol: TCP
+{{- end }}
 {{- end }}
 ---
 {{- if and .Values.networkPolicies.create (index .Values "memgraph" "prometheus" "enabled") }}
