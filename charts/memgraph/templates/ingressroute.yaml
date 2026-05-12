@@ -1,4 +1,4 @@
-{{- if .Values.ingressRoute.enabled -}}
+{{- if and .Values.ingressRoute.enabled (index .Values "memgraph-lab" "enabled") -}}
 {{- $labServiceName := include "memgraph.labServiceName" . -}}
 {{- $defaultHostUrl := include "memgraph.defaultHostUrl" . -}}
 apiVersion: traefik.io/v1alpha1

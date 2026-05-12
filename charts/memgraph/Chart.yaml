@@ -2,7 +2,7 @@ apiVersion: v2
 name: memgraph
 description: Umbrella Helm chart for Memgraph (standalone + Lab) on Kubernetes
 type: application
-version: 0.2.0
+version: 0.2.1
 # renovate: image=memgraph/memgraph-mage
 appVersion: "3.9.0"
 maintainers:
@@ -16,3 +16,4 @@ dependencies:
     version: 0.1.16
     # repository: file:///Users/enys/projets/repos/infra/memgraph-helm-charts/charts/memgraph-lab
     repository: https://memgraph.github.io/helm-charts
+    condition: memgraph-lab.enabled
