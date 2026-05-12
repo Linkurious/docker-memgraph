@@ -16,3 +16,4 @@ dependencies:
     version: 0.1.16
     # repository: file:///Users/enys/projets/repos/infra/memgraph-helm-charts/charts/memgraph-lab
     repository: https://memgraph.github.io/helm-charts
+    condition: memgraph-lab.enabled
