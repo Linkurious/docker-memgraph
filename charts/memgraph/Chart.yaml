@@ -13,7 +13,7 @@ dependencies:
     repository: https://memgraph.github.io/helm-charts
     # repository: file:///Users/enys/projets/repos/infra/memgraph-helm-charts/charts/memgraph
   - name: memgraph-lab
-    version: 1.0.0
+    version: 1.0.2
     # repository: file:///Users/enys/projets/repos/infra/memgraph-helm-charts/charts/memgraph-lab
     repository: https://memgraph.github.io/helm-charts
     condition: memgraph-lab.enabled
